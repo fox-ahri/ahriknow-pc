@@ -11,6 +11,8 @@ Vue.prototype.url = url
 Vue.use(ElementUI);
 Vue.use(Vueaxios, axios)
 
+import "mavon-editor/dist/highlightjs/styles/tomorrow-night.min.css"
+
 Vue.config.productionTip = false
 
 new Vue({

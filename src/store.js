@@ -21,8 +21,7 @@ function uncompileStr(code) {
 }
 
 const state = {
-  user: localStorage.getItem("auth") ? JSON.parse(uncompileStr(localStorage.getItem("auth"))) : null,
-  loading: true
+  user: localStorage.getItem("auth") ? JSON.parse(uncompileStr(localStorage.getItem("auth"))) : null
 }
 
 const mutations = {
@@ -30,8 +29,10 @@ const mutations = {
     localStorage.setItem("auth", compileStr(user))
     state.user = JSON.parse(user)
   },
-  SAVE_LOADING(state, loading) {
-    state.loading = loading
+  LOGOUT(state) {
+    state.user = {
+      role: 0
+    }
   }
 }
 

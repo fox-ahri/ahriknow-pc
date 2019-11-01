@@ -17,8 +17,9 @@
                 <div
                     class="item"
                     v-for="i in category"
+                    v-if="i.name != '站点信息'"
                     @click="readByCate(i)"
-                >{{ i.name }}&nbsp;--&nbsp;{{ i.date }}</div>
+                >{{ i.name }}&nbsp;--&nbsp;{{ i.date }}&nbsp;--&nbsp;文章数：{{ i.count }}</div>
             </div>
         </div>
         <div class="tip" v-show="article.length == 0 && category.length == 0">没有数据</div>
@@ -38,15 +39,17 @@ export default {
     created() {},
     methods: {
         read(val) {
-            localStorage.setItem("article", JSON.stringify(val));
-            val.from = "blog-search";
-            this.$router.push({ name: "blog-read", params: val });
-        },
-        readByCate(val) {
-            localStorage.setItem("cate", val._id);
             this.$router.push({
                 name: "blog-read",
-                params: { cate: val._id, from: "blog-search" }
+                params: { from: "blog-search" },
+                query: { art: val._id, cate: val.category }
+            });
+        },
+        readByCate(val) {
+            this.$router.push({
+                name: "blog-read",
+                params: { from: "blog-search" },
+                query: { cate: val._id }
             });
         },
         search() {

@@ -1,8 +1,11 @@
 <template>
     <div id="blog-home" class="blog-home">
         <div v-for="i in article" class="article">
-            <div class="name">{{ i.name }}</div>
             <hr style="height:2px;border:none;border-top:2px dashed #aaa;" />
+            <div class="name">
+                {{ i.name }}
+                <span>作者:{{ i.username }}&nbsp;&nbsp;时间：{{ i.date }}</span>
+            </div>
             <div class="html" v-html="i.html"></div>
             <div class="btn">
                 <button @click="read(i)">阅读全文</button>
@@ -23,17 +26,22 @@ export default {
     created() {},
     methods: {
         read(val) {
-            localStorage.setItem("article", JSON.stringify(val));
-            this.$router.push({ name: "blog-read", params: val });
+            this.$router.push({
+                name: "blog-read",
+                query: { art: val._id, cate: val.category }
+            });
         }
     },
     mounted() {
         let self = this;
         this.axios
-            .get(self.url + "/data/ahriblog/article/")
+            .get(self.url + "/data/ahriblog/get_by_condition/", {
+                params: {
+                    limit: 5
+                }
+            })
             .then(response => {
-                self.article = response.data.data[0];
-                self.category = response.data.data[1];
+                self.article = response.data.data;
             })
             .catch(response => {
                 console.log(response);
@@ -48,14 +56,24 @@ export default {
     height: 100%;
     .article {
         padding: 15px 30px;
-        margin: 30px 40px;
-        box-shadow: #ccc 0 0 4px;
+        margin: 10px 40px;
+        transition: .6s;
+        &:hover {
+            background: rgb(245, 250, 250);
+        }
+        // box-shadow: #ccc 0 0 4px;
         .name {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
+            padding: 5px 15px;
+            span {
+                font-size: 16px;
+                margin-left: 40px;
+            }
         }
         .html {
-            height: 140px;
+            min-height: 40px;
+            max-height: 140px;
             padding: 10px 60px;
             overflow: hidden;
         }
@@ -72,6 +90,7 @@ export default {
                 &:hover {
                     background: #eee;
                     border-color: #444;
+                    border-radius: 8px;
                 }
             }
         }

@@ -51,7 +51,7 @@ export default {
                 html: ""
             },
             filterText: "",
-            data: [],
+            data: []
         };
     },
     created() {},
@@ -60,7 +60,6 @@ export default {
             this.$router.push({ name: "book-bookshelf" });
         },
         read(data) {
-            this.html = "";
             let self = this;
             this.axios
                 .get(self.url + "/data/notebook/document/", {
@@ -70,9 +69,23 @@ export default {
                     }
                 })
                 .then(response => {
-                     if (response.data.code === 200) {
+                    if (response.data.code === 200) {
                         self.document = response.data.data;
                         self.document.name = data.label;
+                        let tmp = {};
+                        for (let i in self.$route.query) {
+                            tmp[i] = self.$route.query[i];
+                        }
+                        tmp.doc = data.id;
+                        if (
+                            !this.$route.query.hasOwnProperty("doc") ||
+                            this.$route.query.doc != data.id
+                        ) {
+                            self.$router.push({
+                                name: "book-read",
+                                query: tmp
+                            });
+                        }
                     } else {
                         console.log(response);
                         self.$message({
@@ -92,18 +105,27 @@ export default {
         filterNode(value, data) {
             if (!value) return true;
             return data.label.indexOf(value) !== -1;
+        },
+        getById(data, _id) {
+            data.forEach(cata => {
+                if (cata.id == _id) {
+                    this.read(cata);
+                    return;
+                } else {
+                    if (cata.hasOwnProperty("children")) {
+                        this.getById(cata.children, _id);
+                    }
+                }
+            });
         }
     },
     mounted() {
-        if (this.$route.params.hasOwnProperty("_id")) {
-            this.book = this.$route.params;
+        if (this.$route.query.hasOwnProperty("_id")) {
+            this.book._id = this.$route.query._id;
+            this.book.name = this.$route.query.name;
         } else {
-            if (localStorage.getItem("book")) {
-                this.book = JSON.parse(localStorage.getItem("book"));
-            } else {
-                this.$router.push({ name: "home" });
-                return;
-            }
+            this.$router.push({ name: "home" });
+            return;
         }
         let self = this;
         this.axios
@@ -114,9 +136,18 @@ export default {
             })
             .then(response => {
                 if (response.data.code === 200) {
-                    self.book.catalog = response.data.data;
-                    self.data = self.book.catalog;
-                    self.read(self.data[0]);
+                    self.data = response.data.data;
+                    if (this.$route.query.hasOwnProperty("doc")) {
+                        self.getById(self.data, this.$route.query.doc);
+                    } else {
+                        self.read(self.data[0]);
+                    }
+                } else if (response.data.code === 400) {
+                    self.$message({
+                        showClose: true,
+                        type: "warning",
+                        message: "没有文档"
+                    });
                 } else {
                     console.log(response);
                     self.$message({

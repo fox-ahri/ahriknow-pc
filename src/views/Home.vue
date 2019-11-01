@@ -22,7 +22,7 @@
                             <i class="iconfont aklabel"></i>标签
                         </span>
                         <span class="label">12</span>
-                    </div> -->
+                    </div>-->
                     <div class="item" @click="goto('blog-category')">
                         <span class="icon">
                             <i class="iconfont akcategory"></i>分类
@@ -83,7 +83,21 @@
                     </el-tooltip>
                 </div>
                 <div class="link">
+                    <a href="https://admin.ahriknow.com/#/notebook/book" target="_black">写笔记</a>
+                    <a href="https://admin.ahriknow.com/#/blog/survey" target="_black">发文章</a>
+                </div>
+                <div class="link">
                     <a href="https://admin.ahriknow.com" target="_black">Ahriknow Admin</a>
+                </div>
+                <div class="link2">
+                    <div class="c">© 2019 吉ICP备 19000749号-5 </div>
+                    <div class="b">
+                        <a href="http://www.beian.gov.cn/portal/registerSystemInfo">
+                            <img src="../assets/TB2.gif" alt />
+                            <img src="../assets/TB1.png" alt />
+                            <span>吉公网安备 xxx号</span>
+                        </a>
+                    </div>
                 </div>
             </aside>
             <section ref="section">
@@ -91,8 +105,28 @@
                     <div id="top"></div>
                     <router-view />
                     <footer>
+                        <div class="info">
+                            <div class="c">© 2019 吉ICP备 19000749号-5 版权所有</div>
+                            <div class="b">
+                                <a href="http://www.beian.gov.cn/portal/registerSystemInfo">
+                                    <img src="../assets/TB2.gif" alt />
+                                    <img src="../assets/TB1.png" alt />
+                                    <span>吉公网安备 xxx号</span>
+                                </a>
+                            </div>
+                        </div>
                         <hr style="height:2px;border:none;border-top:2px dashed #aaa;" />
-                        <div class="msg" @click="smoothscroll">狸知 - Ahriknow</div>
+                        <div class="msg" @click="smoothscroll">
+                            <span style="font-size: 12px">Top</span>
+                            <i class="el-icon-top"></i>&nbsp;
+                            <i class="el-icon-top"></i>&nbsp;
+                            <i class="el-icon-top"></i>&nbsp;
+                            <span>狸知 - Ahriknow</span>&nbsp;
+                            <i class="el-icon-top"></i>&nbsp;
+                            <i class="el-icon-top"></i>&nbsp;
+                            <i class="el-icon-top"></i>
+                            <span style="font-size: 12px">Top</span>
+                        </div>
                     </footer>
                 </div>
             </section>
@@ -115,7 +149,11 @@ export default {
     },
     methods: {
         goto(path) {
-            if (this.$route.name != path) this.$router.push({ name: path, params: {from: this.$route.name} });
+            if (this.$route.name != path)
+                this.$router.push({
+                    name: path,
+                    params: { from: this.$route.name }
+                });
         },
         smoothscroll() {
             let currentScroll = this.$refs.section.scrollTop;
@@ -162,7 +200,7 @@ export default {
     height: 100%;
     background: rgb(246, 254, 255);
     .view {
-        width: 1200px;
+        width: 1300px;
         height: 100%;
         margin: 0 auto;
         display: flex;
@@ -174,10 +212,10 @@ export default {
             overflow-y: auto;
             float: left;
             .logo {
-                height: 160px;
+                height: 140px;
                 background: #222;
                 text-align: center;
-                padding-top: 40px;
+                padding-top: 30px;
                 .title1 {
                     font-size: 26px;
                     color: #eee;
@@ -271,6 +309,29 @@ export default {
                     }
                 }
             }
+            .link2 {
+                background: #fff;
+                padding: 20px;
+                box-shadow: inset #ccc 0 0 4px;
+                margin: 15px 0;
+                .c {
+                    font-size: 16px;
+                }
+                .b {
+                    a {
+                        color: #aaa;
+                        transition: 0.2s;
+                        &:hover {
+                            color: #666;
+                        }
+                        img {
+                            width: 20px;
+                            height: 20px;
+                            transform: translateY(5px);
+                        }
+                    }
+                }
+            }
         }
         section {
             flex: 1;
@@ -282,7 +343,7 @@ export default {
             box-shadow: inset #ccc 0 0 4px;
             .content {
                 width: 100%;
-                min-height: 100%;
+                min-height: 96%;
                 position: relative;
                 padding-bottom: 100px;
                 footer {
@@ -291,12 +352,38 @@ export default {
                     height: 80px;
                     bottom: 0;
                     left: 0;
+                    .info {
+                        display: flex;
+                        justify-content: space-between;
+                        height: 40px;
+                        line-height: 40px;
+                        padding: 0 100px;
+                        color: #aaa;
+                        .c {
+                            font-size: 14px;
+                        }
+                        .b {
+                            a {
+                                color: #aaa;
+                                transition: 0.2s;
+                                &:hover {
+                                    color: #666;
+                                }
+                                img {
+                                    width: 20px;
+                                    height: 20px;
+                                    transform: translateY(5px);
+                                }
+                            }
+                        }
+                    }
                     .msg {
                         text-align: center;
                         line-height: 70px;
                         font-size: 26px;
                         color: #aaa;
                         cursor: pointer;
+                        transition: 0.2s;
                         &:hover {
                             color: #666;
                         }

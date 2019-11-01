@@ -11,9 +11,10 @@ export default new Router({
       alias: '/index',
       name: 'home',
       component: Home,
-      redirect: '/home',
+      redirect: '/index',
       children: [{
         path: 'home',
+        alias: 'index',
         name: 'blog-home',
         component: () => import(/* webpackChunkName: "blog-home" */ './views/blog/Home.vue')
       }, {

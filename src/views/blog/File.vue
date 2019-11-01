@@ -29,9 +29,11 @@ export default {
     created() {},
     methods: {
         read(val) {
-            localStorage.setItem("article", JSON.stringify(val));
-            val.from = "blog-file";
-            this.$router.push({ name: "blog-read", params: val });
+            this.$router.push({
+                name: "blog-read",
+                params: { from: "blog-file" },
+                query: { art: val._id, cate: val.category }
+            });
         },
         classificate(article) {
             let data = this.sort_pro(article, "date");
@@ -64,7 +66,7 @@ export default {
     mounted() {
         let self = this;
         this.axios
-            .get(self.url + "/data/ahriblog/articles/")
+            .get(self.url + "/data/ahriblog/list_articles/")
             .then(response => {
                 self.classificate(response.data.data);
             })

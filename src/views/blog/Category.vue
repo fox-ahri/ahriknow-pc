@@ -3,11 +3,22 @@
         <div class="categories">
             <h1>分类:</h1>
             <br />
+            <h3>投稿</h3>
             <div
                 v-for="i in category"
+                v-if="i.contribute == '投稿'"
                 class="category"
                 @click="readByCate(i)"
-            >{{ i.name }}&nbsp;--&nbsp;{{ i.username }}&nbsp;--&nbsp;{{ i.date }}</div>
+            >{{ i.name }}&nbsp;--&nbsp;{{ i.username }}&nbsp;--&nbsp;{{ i.date }}&nbsp;--&nbsp;文章数：{{ i.count }}</div>
+            <br />
+            <br />
+            <h3>其他</h3>
+            <div
+                v-for="i in category"
+                v-if="i.contribute == '普通'"
+                class="category"
+                @click="readByCate(i)"
+            >{{ i.name }}&nbsp;--&nbsp;{{ i.username }}&nbsp;--&nbsp;{{ i.date }}&nbsp;--&nbsp;文章数：{{ i.count }}</div>
         </div>
     </div>
 </template>
@@ -20,20 +31,27 @@ export default {
             category: []
         };
     },
-    created() {},
     methods: {
         readByCate(val) {
-            localStorage.setItem("cate", val._id);
+            if (val.count == 0) {
+                this.$message({
+                    showClose: true,
+                    message: "该分类没有文章",
+                    type: "warning"
+                });
+                return;
+            }
             this.$router.push({
                 name: "blog-read",
-                params: { cate: val._id, from: "blog-category" }
+                params: { from: "blog-category" },
+                query: { cate: val._id }
             });
         }
     },
     mounted() {
         let self = this;
         this.axios
-            .get(self.url + "/data/ahriblog/categories/")
+            .get(self.url + "/data/ahriblog/list_categories/")
             .then(response => {
                 self.category = response.data.data;
             })

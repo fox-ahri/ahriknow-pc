@@ -23,15 +23,17 @@ export default {
     created() {},
     methods: {
         read(val) {
-            localStorage.setItem("article", JSON.stringify(val));
-            val.from = "blog-article";
-            this.$router.push({ name: "blog-read", params: val });
+            this.$router.push({
+                name: "blog-read",
+                params: { from: "blog-article" },
+                query: { art: val._id, cate: val.category }
+            });
         }
     },
     mounted() {
         let self = this;
         this.axios
-            .get(self.url + "/data/ahriblog/articles/")
+            .get(self.url + "/data/ahriblog/list_articles/")
             .then(response => {
                 self.article = response.data.data;
             })

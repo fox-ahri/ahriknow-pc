@@ -37,8 +37,10 @@ export default {
             this.$router.push({ name: this.from });
         },
         read(val) {
-            localStorage.setItem("book", JSON.stringify(val));
-            this.$router.push({ name: "book-read", params: val });
+            this.$router.push({
+                name: "book-read",
+                query: { _id: val._id, name: val.name }
+            });
         }
     },
     mounted() {
@@ -48,7 +50,6 @@ export default {
             .then(response => {
                 if (response.data.code === 200) {
                     self.books = response.data.data;
-                    console.log(response.data.data);
                 } else {
                     console.log(response);
                     self.$message({
