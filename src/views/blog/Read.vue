@@ -1,6 +1,6 @@
 <template>
     <div id="blog-read" class="blog-read">
-        <div class="back">
+        <div class="back nocopy">
             <button @click="goBack">
                 <i class="iconfont akback"></i>
             </button>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -9,17 +9,74 @@
         <header>
             <div class="title">
                 {{ article.name }}
-                <el-tag v-if="article.type == 1" size="mini" type="success">原创</el-tag>
-                <el-tag v-if="article.type == 2" size="mini">转载</el-tag>
-                <el-tag v-if="article.type == 3" size="mini" type="info">翻译</el-tag>
+                <el-tag class="nocopy" v-if="article.type == 1" size="mini" type="success">原创</el-tag>
+                <el-tag class="nocopy" v-if="article.type == 2" size="mini">转载</el-tag>
+                <el-tag class="nocopy" v-if="article.type == 3" size="mini" type="info">翻译</el-tag>
             </div>
-            <div class="info">{{ article.username }}&nbsp;&nbsp;&nbsp;&nbsp;{{ article.date }}</div>
+            <div class="infomation">
+                <div class="info">
+                    <b style="font-size: 20px;">{{ article.username }}</b>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{{ article.date }}
+                </div>
+                <div class="browse nocopy" title="浏览量">
+                    <i class="iconfont akbrowse"></i>
+                    <span>{{ article.browse }}</span>
+                </div>
+                <div
+                    class="fabulous nocopy"
+                    :class="{'true':user.role > 0 && article.fabulous}"
+                    title="点赞"
+                    @click="fabulous(article)"
+                >
+                    <i class="iconfont akzan"></i>
+                    <span>{{ article.fabulous_count }}</span>
+                </div>
+                <div
+                    class="collection nocopy"
+                    :class="{'true':user.role > 0 && article.collection}"
+                    title="收藏"
+                    @click="collection(article)"
+                >
+                    <i class="iconfont akcollection"></i>
+                </div>
+            </div>
         </header>
         <hr style="height:2px;border:none;border-top:2px dashed #aaa;" />
-        <div class="article markdown-body" v-html="article.html"></div>
-        <span class="go-back" @click="goBack">
-            <i class="iconfont akback">&nbsp;&nbsp;返回</i>
-        </span>
+        <mavon-editor
+            style="box-shadow: none"
+            :toolbarsFlag="false"
+            v-model="article.markdown"
+            :tabSize="4"
+            defaultOpen="preview"
+            :subfield="false"
+            codeStyle="atom-one-dark"
+        ></mavon-editor>
+        <div class="infomation-footer nocopy">
+            <span class="go-back" @click="goBack">
+                <i class="iconfont akback">&nbsp;&nbsp;返回</i>
+            </span>
+            <div class="browse" title="浏览量">
+                <i class="iconfont akbrowse"></i>
+                <span>{{ article.browse }}</span>
+            </div>
+            <div
+                class="fabulous"
+                :class="{'true':user.role > 0 && article.fabulous}"
+                title="点赞"
+                @click="fabulous(article)"
+            >
+                <i class="iconfont akzan"></i>
+                <span>{{ article.fabulous_count }}</span>
+            </div>
+            <div
+                class="collection"
+                :class="{'true':user.role > 0 && article.collection}"
+                title="收藏"
+                @click="collection(article)"
+            >
+                <i class="iconfont akcollection"></i>
+            </div>
+        </div>
         <br />
         <br />
         <div class="comment" v-show="article.comment">
@@ -32,13 +89,14 @@
                 v-for="i in comment.filter(com => (!filterByUser || com.user.includes(filterByUser))&&(!filterByContent || com.comment.includes(filterByContent)))"
             >
                 <div class="item">
-                    <div class="avatar">
+                    <div class="avatar nocopy">
                         <img :src="i.avatar" alt />
                     </div>
                     <div class="text">
                         <div class="user">
                             <span class="name">
                                 <el-tag
+                                    class="nocopy"
                                     v-if="article.username == i.username"
                                     type="success"
                                     style="font-size: 12px;height: 28px;"
@@ -59,11 +117,13 @@
                                 <div class="userinfo">
                                     <span class="name">
                                         <el-tag
+                                            class="nocopy"
                                             v-if="j.name == article.username"
                                             size="mini"
                                             type="success"
                                         >作者</el-tag>
                                         <el-tag
+                                            class="nocopy"
                                             v-if="j.name == i.username"
                                             size="mini"
                                             type="warning"
@@ -158,7 +218,7 @@
                             </el-form-item>
                             <el-form-item>
                                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                                <el-button type="primary" @click="submitForm('ruleForm')">Sign in</el-button>
+                                <el-button type="primary" @click="submitForm('ruleForm')">登 录</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -169,9 +229,14 @@
 </template>
 
 <script>
+import "mavon-editor/dist/css/index.css";
+import { mavonEditor } from "mavon-editor";
 import E from "wangeditor";
 export default {
     name: "blog-read",
+    components: {
+        mavonEditor
+    },
     data() {
         var validateUsername = (rule, value, callback) => {
             if (value === "") {
@@ -217,6 +282,108 @@ export default {
         };
     },
     methods: {
+        fabulous(article) {
+            if (this.user.role <= 0) {
+                this.user = {
+                    username: "ahri",
+                    avatar:
+                        "https://aaahri.cn/media/ahriblog/5d8aeda54a6f436e6d34baa4/2019_10_22/20191022UZkLlNdQ.jpg",
+                    role: 0
+                };
+                localStorage.removeItem("auth");
+                this.dialogFormVisible = true;
+                return;
+            }
+            if (article.fabulous) {
+                article.fabulous = false;
+                article.fabulous_count--;
+            } else {
+                article.fabulous = true;
+                article.fabulous_count++;
+            }
+            let self = this;
+            this.axios({
+                url: self.url + "/data/ahriblog/one_article/",
+                method: "post",
+                data: JSON.stringify({
+                    user_id: self.user._id,
+                    _id: article._id,
+                    type: "fabulous",
+                    opera: article.fabulous
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(
+                function(response) {
+                    if (response.data.code === 200) {
+                    } else {
+                        console.log(response);
+                        self.$message({
+                            showClose: true,
+                            message: "服务器内部错误"
+                        });
+                    }
+                },
+                function(response) {
+                    console.log(response);
+                    self.$message({
+                        showClose: true,
+                        message: "客户端错误，请求失败"
+                    });
+                }
+            );
+        },
+        collection(article) {
+            if (this.user.role <= 0) {
+                this.user = {
+                    username: "ahri",
+                    avatar:
+                        "https://aaahri.cn/media/ahriblog/5d8aeda54a6f436e6d34baa4/2019_10_22/20191022UZkLlNdQ.jpg",
+                    role: 0
+                };
+                localStorage.removeItem("auth");
+                this.dialogFormVisible = true;
+                return;
+            }
+            if (article.collection) {
+                article.collection = false;
+            } else {
+                article.collection = true;
+            }
+            let self = this;
+            this.axios({
+                url: self.url + "/data/ahriblog/one_article/",
+                method: "post",
+                data: JSON.stringify({
+                    user_id: self.user._id,
+                    _id: article._id,
+                    type: "collection",
+                    opera: article.collection
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(
+                function(response) {
+                    if (response.data.code === 200) {
+                    } else {
+                        console.log(response);
+                        self.$message({
+                            showClose: true,
+                            message: "服务器内部错误"
+                        });
+                    }
+                },
+                function(response) {
+                    console.log(response);
+                    self.$message({
+                        showClose: true,
+                        message: "客户端错误，请求失败"
+                    });
+                }
+            );
+        },
         submitForm(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
@@ -241,7 +408,9 @@ export default {
                                     "SAVE_USER",
                                     response.data.data
                                 );
+                                self.read(self.article);
                                 self.dialogFormVisible = false;
+                                window.location.reload();
                             } else if (response.data.code === 300) {
                                 self.$message({
                                     showClose: true,
@@ -292,7 +461,32 @@ export default {
                 });
             }
             let self = this;
-            this.article = val;
+            this.axios
+                .get(self.url + "/data/ahriblog/one_article/", {
+                    params: {
+                        _id: val._id,
+                        user_id: self.user.role > 0 ? self.user._id : ""
+                    }
+                })
+                .then(response => {
+                    if (response.data.code === 200) {
+                        self.article = response.data.data;
+                    } else {
+                        console.log(response);
+                        self.$message({
+                            showClose: true,
+                            message: "文章加载失败",
+                            type: "warning"
+                        });
+                    }
+                })
+                .catch(response => {
+                    console.log(response);
+                    self.$message({
+                        showClose: true,
+                        message: "客户端错误，请求失败"
+                    });
+                });
             this.drawer = false;
             if (val.comment)
                 this.axios
@@ -1588,7 +1782,12 @@ export default {
         },
         commit() {
             if (this.user.role <= 0) {
-                this.user = { role: 0 };
+                this.user = {
+                    username: "ahri",
+                    avatar:
+                        "https://aaahri.cn/media/ahriblog/5d8aeda54a6f436e6d34baa4/2019_10_22/20191022UZkLlNdQ.jpg",
+                    role: 0
+                };
                 localStorage.removeItem("auth");
                 this.dialogFormVisible = true;
                 return;
@@ -1680,7 +1879,6 @@ export default {
             })
             .then(response => {
                 self.art_list = response.data.data;
-                self.loading = false;
                 if (self.$route.query.hasOwnProperty("art")) {
                     self.art_list.forEach(art => {
                         if (art._id == self.$route.query.art) {
@@ -1695,9 +1893,8 @@ export default {
                             cate: self.$route.query.cate
                         }
                     });
-                    self.article = self.art_list[0];
+                    self.read(self.art_list[0]);
                 }
-                self.loading2 = false;
             })
             .catch(response => {
                 console.log(response);
@@ -1705,7 +1902,6 @@ export default {
                     showClose: true,
                     message: "客户端错误，请求失败"
                 });
-                self.loading = false;
             });
         this.initEditor();
     }
@@ -1729,11 +1925,51 @@ export default {
 }
 #blog-read {
     padding: 15px;
-    .go-back {
-        color: #3272fc;
-        cursor: pointer;
-        &:hover {
-            color: #0e3fa8;
+    .infomation-footer {
+        display: flex;
+        .go-back {
+            color: #3272fc;
+            cursor: pointer;
+            &:hover {
+                color: #0e3fa8;
+            }
+        }
+        .browse {
+            font-size: 18px;
+            margin: 0 10px;
+            padding: 0 14px;
+            i {
+                font-size: 20px;
+                display: inline-block;
+                transform: scaleY(1.2);
+            }
+            span {
+                margin-left: 10px;
+            }
+        }
+        .fabulous {
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 10px;
+            padding: 0 14px;
+            i {
+                font-size: 20px;
+            }
+            span {
+                margin-left: 10px;
+            }
+        }
+        .collection {
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 10px;
+            padding: 0 14px;
+            i {
+                font-size: 20px;
+            }
+        }
+        .true {
+            color: #f1c40f;
         }
     }
     .back {
@@ -1754,16 +1990,56 @@ export default {
     }
     header {
         padding: 0 0 15px 40px;
-        display: flex;
+        // display: flex;
         .title {
             font-size: 24px;
             font-weight: bold;
-            margin: 15px 40px 0 10px;
+            margin: 15px 40px 0 0;
         }
-        .info {
-            font-size: 18px;
-            line-height: 40px;
-            margin: 15px 40px 0 10px;
+        .infomation {
+            display: flex;
+            line-height: 20px;
+            .info {
+                font-size: 18px;
+                margin: 15px 40px 0 10px;
+            }
+            .browse {
+                font-size: 22px;
+                margin: 12px 20px 0 20px;
+                padding: 0 14px;
+                i {
+                    font-size: 24px;
+                    display: inline-block;
+                    transform: translateY(2px) scaleY(1.2);
+                }
+                span {
+                    margin-left: 10px;
+                }
+            }
+            .fabulous {
+                cursor: pointer;
+                font-size: 22px;
+                margin: 12px 20px 0 20px;
+                padding: 0 14px;
+                i {
+                    font-size: 24px;
+                }
+                span {
+                    margin-left: 10px;
+                }
+            }
+            .collection {
+                cursor: pointer;
+                font-size: 22px;
+                margin: 12px 20px 0 20px;
+                padding: 0 14px;
+                i {
+                    font-size: 24px;
+                }
+            }
+            .true {
+                color: #f1c40f;
+            }
         }
     }
     .article {

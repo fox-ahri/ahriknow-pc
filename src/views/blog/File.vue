@@ -6,11 +6,12 @@
             <el-timeline>
                 <el-timeline-item v-for="i in data" :timestamp="i.date" placement="top">
                     <el-card>
-                        <div
-                            class="article"
-                            v-for="j in i.allData"
-                            @click="read(j)"
-                        >{{ j.name }}&nbsp;--&nbsp;{{ j.username }}</div>
+                        <div class="article" v-for="j in i.allData" @click="read(j)">
+                            {{ j.name }}&nbsp;--&nbsp;{{ j.username }}
+                            <span
+                                v-if="j.date.length > 12"
+                            >&nbsp;--&nbsp;{{ j.date.substring(11, 16) }}</span>
+                        </div>
                     </el-card>
                 </el-timeline-item>
             </el-timeline>
@@ -46,15 +47,18 @@ export default {
             let c = [];
             let d = {};
             data.forEach(element => {
-                if (!d[element[name]]) {
+                if (!d[element[name].substr(0, 10)]) {
                     c.push({
-                        [name]: element[name],
+                        [name]: element[name].substr(0, 10),
                         allData: [element]
                     });
-                    d[element[name]] = element;
+                    d[element[name].substr(0, 10)] = element;
                 } else {
                     c.forEach(ele => {
-                        if (ele[name] == element[name]) {
+                        if (
+                            ele[name].substr(0, 10) ==
+                            element[name].substr(0, 10)
+                        ) {
                             ele.allData.push(element);
                         }
                     });

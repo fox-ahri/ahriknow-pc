@@ -29,18 +29,33 @@
         </aside>
         <section>
             <article>
-                <div class="doc">Document:&nbsp;&nbsp;{{ document.name }}</div>
+                <div class="doc">
+                    Document:&nbsp;&nbsp;{{ document.name }}
+                    <el-button type="text" @click="download(document.content)">下载</el-button>
+                </div>
                 <br />
                 <br />
-                <div class="content html markdown-body" v-html="document.html"></div>
+                <mavon-editor
+                    :toolbarsFlag="false"
+                    v-model="document.content"
+                    :tabSize="4"
+                    defaultOpen="preview"
+                    :subfield="false"
+                    codeStyle="atom-one-dark"
+                ></mavon-editor>
             </article>
         </section>
     </div>
 </template>
 
 <script>
+import "mavon-editor/dist/css/index.css";
+import { mavonEditor } from "mavon-editor";
 export default {
     name: "book-read",
+    components: {
+        mavonEditor
+    },
     data() {
         return {
             book: {
@@ -56,6 +71,19 @@ export default {
     },
     created() {},
     methods: {
+        download(val) {
+            let filename = this.document.name + ".md";
+            var element = document.createElement("a");
+            element.setAttribute(
+                "href",
+                "data:text/plain;charset=utf-8," + encodeURIComponent(val)
+            );
+            element.setAttribute("download", filename);
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        },
         goBack() {
             this.$router.push({ name: "book-bookshelf" });
         },
@@ -241,10 +269,9 @@ export default {
                 font-size: 24px;
                 color: #2c3e50;
                 box-shadow: #ccc 0 0 6px;
-            }
-            .content {
-                padding: 15px;
-                box-shadow: #ccc 0 0 6px;
+                .el-button {
+                    margin-left: 40px;
+                }
             }
         }
     }

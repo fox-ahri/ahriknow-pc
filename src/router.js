@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import Error404 from './views/404.vue'
 
 Vue.use(Router)
 
@@ -41,6 +42,10 @@ export default new Router({
         path: 'search',
         name: 'blog-search',
         component: () => import(/* webpackChunkName: "blog-search" */ './views/blog/SearchPage.vue')
+      }, {
+        path: 'collection',
+        name: 'blog-collection',
+        component: () => import(/* webpackChunkName: "blog-collection" */ './views/blog/Collection.vue')
       }
       ]
     }, {
@@ -57,6 +62,11 @@ export default new Router({
         name: 'book-read',
         component: () => import(/* webpackChunkName: "book-read" */ './views/book/Read.vue')
       }]
+    },
+    {
+      path: '*',
+      name: '404',
+      component: Error404
     }
   ]
 })
