@@ -1,6 +1,6 @@
 # 狸知 - AHRIKNOW - PC
-#### 2019.12.01
-[![VERSION = 70.0.0.3](https://badgen.net/badge/release/v70.0.0.3/blue)](https://admin.ahriknow.com/)
+#### 2020.01.01
+[![VERSION = 70.0.0.4](https://badgen.net/badge/release/v70.0.0.4/blue)](https://admin.ahriknow.com/)
 #### [HOME](https://www.ahriknow.com/#/)
 ### Technology stack:
 - [VUE](https://cn.vuejs.org/index.html)

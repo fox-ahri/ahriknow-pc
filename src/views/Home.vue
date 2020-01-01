@@ -139,9 +139,9 @@
                             <div class="c">© 2019 吉ICP备 19000749号-5 版权所有</div>
                             <div class="b">
                                 <a href="http://www.beian.gov.cn/portal/registerSystemInfo">
-                                    <img src="../assets/TB2.gif" alt />
+                                    <!-- <img src="../assets/TB2.gif" alt />
                                     <img src="../assets/TB1.png" alt />
-                                    <span>吉公网安备 xxx号</span>
+                                    <span>吉公网安备 xxx号</span> -->
                                 </a>
                             </div>
                         </div>
